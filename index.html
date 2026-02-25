@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CoSolve by ValueSims — Structured Problem-Solving for Senior Leaders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ── TOKENS ────────────────────────────────────────────── */
+  :root {
+    --ink:    #090c12;
+    --deep:   #0f1218;
+    --panel:  #141820;
+    --card:   #1a1f2c;
+    --border: rgba(255,255,255,.07);
+    --gold:   #c9a84c;
+    --gold2:  #e2c87a;
+    --smoke:  #8b919e;
+    --mist:   #b0b7c3;
+    --white:  #f0f3f8;
+    --serif:  'Cormorant Garamond', Georgia, serif;
+    --sans:   'Outfit', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--ink); color: var(--white); overflow-x: hidden; line-height: 1.6; }
+  a { color: inherit; text-decoration: none; }
+
+  /* grain */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: .025;
+  }
+
+  /* ── NAV ───────────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 68px;
+    background: rgba(9,12,18,.9); backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; letter-spacing: .02em; }
+  .nav-logo span { color: var(--gold); }
+  .nav-logo sup { font-family: var(--sans); font-size: .58rem; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; color: var(--smoke); vertical-align: super; margin-left: .3rem; }
+  .nav-links { display: flex; gap: 2.2rem; list-style: none; font-size: .76rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--smoke); }
+  .nav-links a:hover { color: var(--gold); transition: color .2s; }
+  .nav-cta { font-size: .76rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: .55rem 1.4rem; border: 1px solid var(--gold); color: var(--gold); transition: background .25s, color .25s; }
+  .nav-cta:hover { background: var(--gold); color: var(--ink); }
+
+  /* ── BUTTONS ───────────────────────────────────────────── */
+  .btn-gold { display: inline-block; padding: .85rem 2.2rem; background: var(--gold); color: var(--ink); font-family: var(--sans); font-size: .8rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; border: none; cursor: pointer; transition: background .25s, transform .2s; }
+  .btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-ghost { display: inline-block; padding: .85rem 2.2rem; background: transparent; color: var(--white); font-family: var(--sans); font-size: .8rem; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--border); cursor: pointer; transition: border-color .25s; }
+  .btn-ghost:hover { border-color: var(--smoke); }
+
+  /* ── SHARED ────────────────────────────────────────────── */
+  .eyebrow { display: inline-flex; align-items: center; gap: .55rem; font-size: .68rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+  .eyebrow::before { content: ''; display: block; width: 22px; height: 1px; background: var(--gold); }
+  .section-title { font-family: var(--serif); font-size: clamp(2rem, 3.8vw, 3.4rem); font-weight: 300; line-height: 1.13; }
+  .section-title em { font-style: italic; color: var(--gold); }
+  .section-lead { font-size: 1rem; font-weight: 300; color: var(--smoke); line-height: 1.82; max-width: 520px; }
+  .gold-rule { display: block; width: 48px; height: 1px; background: var(--gold); margin-bottom: 1.6rem; }
+  section { padding: 7rem 5vw; }
+
+  /* ── HERO ──────────────────────────────────────────────── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 5vw 80px; overflow: hidden;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 75% 70% at 65% 50%, black 25%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute; right: -8vw; top: 50%; transform: translateY(-50%);
+    width: min(55vw, 780px); aspect-ratio: 1;
+    background: radial-gradient(circle at 38% 38%, rgba(201,168,76,.16), rgba(201,168,76,.03) 55%, transparent 72%);
+    border-radius: 50%; pointer-events: none;
+    animation: glow 8s ease-in-out infinite alternate;
+  }
+  @keyframes glow { from { opacity: .7; transform: translateY(-50%) scale(1); } to { opacity: 1; transform: translateY(-52%) scale(1.04); } }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+  .hero-product-tag {
+    display: inline-flex; align-items: center; gap: .8rem;
+    border: 1px solid rgba(201,168,76,.3);
+    padding: .4rem 1rem .4rem .6rem;
+    margin-bottom: 2.4rem;
+  }
+  .hero-product-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+  .hero-product-tag span { font-size: .7rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+  .hero h1 { font-family: var(--serif); font-size: clamp(3.2rem, 6.5vw, 6rem); font-weight: 300; line-height: 1.07; letter-spacing: -.01em; margin-bottom: 1.6rem; }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub { font-size: 1.05rem; font-weight: 300; color: var(--mist); max-width: 560px; line-height: 1.8; margin-bottom: 2.8rem; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .hero-proof {
+    position: relative; z-index: 1;
+    display: flex; gap: 3.5rem; flex-wrap: wrap;
+    margin-top: 5rem; padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .proof-stat .num { font-family: var(--serif); font-size: 2.8rem; font-weight: 300; color: var(--gold); line-height: 1; }
+  .proof-stat .lbl { font-size: .7rem; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--smoke); margin-top: .3rem; }
+
+  /* ── WHAT IS COSOLVE ──────────────────────────────────── */
+  .what { background: var(--deep); border-top: 1px solid var(--border); }
+  .what-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: center; }
+  .what-left .eyebrow { margin-bottom: 1.2rem; }
+  .what-left .section-title { margin-bottom: 1.4rem; }
+  .what-left .section-lead { margin-bottom: 2rem; }
+  .what-pillars { display: flex; flex-direction: column; gap: 0; margin-top: 2.5rem; border: 1px solid var(--border); }
+  .what-pillar {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1.3rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background .25s;
+  }
+  .what-pillar:last-child { border-bottom: none; }
+  .what-pillar:hover { background: rgba(201,168,76,.04); }
+  .wp-num { font-family: var(--serif); font-size: 1.5rem; font-weight: 300; color: rgba(201,168,76,.35); min-width: 2rem; line-height: 1; padding-top: .1rem; }
+  .wp-title { font-size: .88rem; font-weight: 500; margin-bottom: .3rem; }
+  .wp-body { font-size: .83rem; color: var(--smoke); font-weight: 300; line-height: 1.7; }
+
+  .what-right { position: relative; }
+  .methodology-card {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 2.5rem; position: relative; overflow: hidden;
+  }
+  .methodology-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 80% 10%, rgba(201,168,76,.1), transparent 55%);
+  }
+  .mc-tag { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+  .mc-title { font-family: var(--serif); font-size: 1.7rem; font-weight: 300; line-height: 1.2; margin-bottom: 1.5rem; }
+  .mc-phases { display: flex; flex-direction: column; gap: .6rem; }
+  .mc-phase {
+    display: flex; align-items: center; gap: 1rem;
+    padding: .75rem 1rem;
+    background: rgba(255,255,255,.03);
+    border-left: 2px solid transparent;
+    font-size: .82rem; transition: border-color .25s, background .25s;
+  }
+  .mc-phase:hover { border-left-color: var(--gold); background: rgba(201,168,76,.06); }
+  .mc-phase-num { font-family: var(--serif); font-size: 1.2rem; font-weight: 300; color: var(--gold); min-width: 1.5rem; }
+  .mc-phase-label { font-weight: 400; }
+  .mc-phase-sub { font-size: .75rem; color: var(--smoke); margin-top: .1rem; font-weight: 300; }
+
+  /* ── YOUR CONTROL (DATA SOVEREIGNTY) ─────────────────── */
+  .your-control {
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+  }
+  .yc-header { text-align: center; margin-bottom: 5rem; display: flex; flex-direction: column; align-items: center; gap: .8rem; }
+  .yc-header .section-title { max-width: 780px; text-align: center; }
+  .yc-header .section-lead { text-align: center; margin: 0 auto; max-width: 580px; }
+
+  .yc-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); margin-bottom: 3rem; }
+  .yc-pillar {
+    background: var(--panel); padding: 3rem 2.6rem;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: background .3s;
+  }
+  .yc-pillar:hover { background: var(--card); }
+  .yc-pillar::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; transition: background .3s;
+  }
+  .yc-pillar:hover::after { background: var(--gold); }
+  .yc-pillar-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 85% 15%, rgba(201,168,76,.07), transparent 55%);
+    opacity: 0; transition: opacity .35s; pointer-events: none;
+  }
+  .yc-pillar:hover .yc-pillar-glow { opacity: 1; }
+  .yc-icon {
+    width: 46px; height: 46px;
+    border: 1px solid rgba(201,168,76,.3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); margin-bottom: 1.8rem; position: relative; z-index: 1;
+  }
+  .yc-tag { font-size: .63rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: .75rem; position: relative; z-index: 1; }
+  .yc-title { font-family: var(--serif); font-size: 1.55rem; font-weight: 300; margin-bottom: 1rem; line-height: 1.2; position: relative; z-index: 1; }
+  .yc-body { font-size: .87rem; color: var(--smoke); font-weight: 300; line-height: 1.82; flex: 1; position: relative; z-index: 1; }
+  .yc-points { margin-top: 1.6rem; display: flex; flex-direction: column; gap: .5rem; position: relative; z-index: 1; }
+  .yc-point { font-size: .78rem; color: var(--mist); font-weight: 300; padding-left: 1.1rem; position: relative; line-height: 1.55; }
+  .yc-point::before { content: '✦'; position: absolute; left: 0; color: var(--gold); font-size: .5rem; top: .2rem; }
+
+  .yc-banner {
+    background: rgba(201,168,76,.05);
+    border: 1px solid rgba(201,168,76,.2);
+    border-left: 3px solid var(--gold);
+    padding: 2.2rem 2.8rem;
+    display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+  }
+  .yc-banner-icon { color: var(--gold); flex-shrink: 0; }
+  .yc-banner p { font-family: var(--serif); font-size: 1.15rem; font-weight: 300; font-style: italic; color: var(--mist); line-height: 1.65; max-width: 840px; }
+  .yc-banner p em { font-style: normal; color: var(--white); font-weight: 400; }
+
+  /* ── HOW TO ENGAGE ────────────────────────────────────── */
+  .engage { background: var(--ink); border-top: 1px solid var(--border); }
+  .engage-header { text-align: center; margin-bottom: 4.5rem; display: flex; flex-direction: column; align-items: center; gap: .8rem; }
+  .engage-header .section-title { max-width: 620px; text-align: center; }
+  .engage-header .section-lead { text-align: center; margin: 0 auto; }
+
+  .engage-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background: var(--border); border: 1px solid var(--border); }
+  .engage-card {
+    background: var(--ink); padding: 3rem 2.4rem;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: background .3s;
+  }
+  .engage-card:hover { background: var(--panel); }
+  .engage-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: transparent; transition: background .3s;
+  }
+  .engage-card:hover::after { background: var(--gold); }
+  .ec-icon { width: 42px; height: 42px; border: 1px solid rgba(201,168,76,.3); display: flex; align-items: center; justify-content: center; color: var(--gold); margin-bottom: 1.6rem; }
+  .ec-tag { font-size: .65rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: .7rem; }
+  .ec-title { font-family: var(--serif); font-size: 1.55rem; font-weight: 300; margin-bottom: .9rem; line-height: 1.2; }
+  .ec-body { font-size: .87rem; color: var(--smoke); font-weight: 300; line-height: 1.8; flex: 1; }
+  .ec-detail { margin-top: 1.8rem; padding-top: 1.4rem; border-top: 1px solid var(--border); font-size: .78rem; color: var(--mist); font-weight: 300; line-height: 1.7; }
+
+  /* ── INDUSTRIES ───────────────────────────────────────── */
+  .industries { background: var(--deep); border-top: 1px solid var(--border); }
+  .industries-header { margin-bottom: 3.5rem; }
+  .industries-intro { font-size: .98rem; color: var(--smoke); font-weight: 300; line-height: 1.8; max-width: 680px; margin-top: 1rem; }
+
+  .industries-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); margin-bottom: 3rem; }
+  .industry-card {
+    background: var(--deep); padding: 2.5rem;
+    position: relative; overflow: hidden;
+    transition: background .3s;
+  }
+  .industry-card:hover { background: var(--card); }
+  .industry-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 90% 10%, rgba(201,168,76,.06), transparent 50%);
+    opacity: 0; transition: opacity .3s;
+  }
+  .industry-card:hover::before { opacity: 1; }
+  .ic-sector {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .67rem; font-weight: 500; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+  }
+  .ic-sector::before { content: ''; display: block; width: 12px; height: 1px; background: var(--gold); }
+  .ic-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 300; margin-bottom: .8rem; line-height: 1.2; }
+  .ic-body { font-size: .87rem; color: var(--smoke); font-weight: 300; line-height: 1.8; }
+  .ic-problems { margin-top: 1.2rem; display: flex; flex-direction: column; gap: .35rem; }
+  .ic-problem { font-size: .78rem; color: var(--mist); font-weight: 300; padding-left: 1rem; position: relative; }
+  .ic-problem::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
+
+  .industries-note {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 2rem 2.5rem;
+    display: flex; gap: 2rem; align-items: center;
+    flex-wrap: wrap;
+  }
+  .industries-note p { font-size: .95rem; font-weight: 300; color: var(--mist); line-height: 1.75; max-width: 640px; }
+  .industries-note p strong { color: var(--white); font-weight: 500; }
+
+  /* ── PROBLEM SOLVING STRATEGY ─────────────────────────── */
+  .strategy { background: var(--panel); border-top: 1px solid var(--border); }
+  .strategy-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; align-items: start; }
+  .strategy-left .eyebrow { margin-bottom: 1.2rem; }
+  .strategy-left .section-title { margin-bottom: 1.2rem; }
+  .strategy-left .section-lead { margin-bottom: 2rem; }
+  .strategy-steps { counter-reset: ssteps; }
+  .strategy-step {
+    display: flex; gap: 1.4rem; align-items: flex-start;
+    padding: 1.5rem 0; border-bottom: 1px solid var(--border);
+    counter-increment: ssteps;
+  }
+  .strategy-step:first-child { padding-top: 0; }
+  .ss-num {
+    font-family: var(--serif); font-size: 2.2rem; font-weight: 300;
+    color: rgba(201,168,76,.2); min-width: 2rem; line-height: 1;
+    transition: color .3s;
+  }
+  .ss-num::before { content: counter(ssteps, decimal-leading-zero); }
+  .strategy-step:hover .ss-num { color: var(--gold); }
+  .ss-title { font-size: .9rem; font-weight: 500; margin-bottom: .35rem; }
+  .ss-body { font-size: .84rem; color: var(--smoke); font-weight: 300; line-height: 1.75; }
+
+  .strategy-right { position: sticky; top: 88px; }
+  .strategy-callout {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 2.8rem; margin-bottom: 1.5px;
+  }
+  .sc-label { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .sc-quote { font-family: var(--serif); font-size: 1.2rem; font-style: italic; font-weight: 300; color: var(--mist); line-height: 1.7; border-left: 2px solid var(--gold); padding-left: 1.2rem; margin-bottom: 1.2rem; }
+  .sc-author { font-size: .75rem; color: var(--smoke); letter-spacing: .06em; }
+  .strategy-proof {
+    background: var(--deep); border: 1px solid var(--border);
+    padding: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background-color: var(--border);
+  }
+  .sp-cell { background: var(--deep); padding: 1.4rem; }
+  .sp-num { font-family: var(--serif); font-size: 2rem; font-weight: 300; color: var(--gold); line-height: 1; }
+  .sp-lbl { font-size: .72rem; color: var(--smoke); margin-top: .3rem; font-weight: 300; line-height: 1.4; }
+
+  /* ── PARTNERS ─────────────────────────────────────────── */
+  .partners { background: var(--ink); border-top: 1px solid var(--border); }
+  .partners-header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: .8rem; margin-bottom: 4.5rem; }
+  .partners-header .section-title { max-width: 640px; text-align: center; }
+  .partners-header .section-lead { text-align: center; margin: 0 auto; }
+
+  .partner-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); margin-bottom: 3rem; }
+  .partner-card {
+    background: var(--ink); padding: 2.8rem 2.4rem;
+    transition: background .3s; position: relative; overflow: hidden;
+  }
+  .partner-card:hover { background: var(--deep); }
+  .partner-card::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: transparent; transition: background .3s;
+  }
+  .partner-card:hover::before { background: var(--gold); }
+  .pc-type { font-size: .66rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+  .pc-title { font-family: var(--serif); font-size: 1.55rem; font-weight: 300; margin-bottom: .9rem; }
+  .pc-body { font-size: .86rem; color: var(--smoke); font-weight: 300; line-height: 1.8; margin-bottom: 1.5rem; }
+  .pc-benefits { display: flex; flex-direction: column; gap: .4rem; }
+  .pc-benefit { font-size: .78rem; color: var(--mist); font-weight: 300; padding-left: 1.1rem; position: relative; line-height: 1.5; }
+  .pc-benefit::before { content: '✦'; position: absolute; left: 0; color: var(--gold); font-size: .5rem; top: .2rem; }
+
+  .partner-cta {
+    background: var(--deep); border: 1px solid var(--border);
+    padding: 2.5rem; display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  }
+  .partner-cta p { font-family: var(--serif); font-size: 1.35rem; font-weight: 300; max-width: 500px; line-height: 1.4; }
+  .partner-cta p em { font-style: italic; color: var(--gold); }
+
+  /* ── CTA BAND ─────────────────────────────────────────── */
+  .cta-band {
+    background: var(--panel); border-top: 1px solid var(--border);
+    padding: 7rem 5vw; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-band::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 90% at 50% 50%, rgba(201,168,76,.07), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-band h2 { font-family: var(--serif); font-size: clamp(2.4rem, 4.5vw, 4.2rem); font-weight: 300; line-height: 1.1; max-width: 740px; margin: 0 auto 1.4rem; }
+  .cta-band h2 em { font-style: italic; color: var(--gold); }
+  .cta-band p { font-size: .98rem; color: var(--smoke); font-weight: 300; max-width: 430px; margin: 0 auto 2.8rem; line-height: 1.75; }
+  .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .cta-note { margin-top: 1.6rem; font-size: .75rem; color: var(--smoke); letter-spacing: .06em; }
+
+  /* ── FOOTER ───────────────────────────────────────────── */
+  footer {
+    background: var(--ink); border-top: 1px solid var(--border);
+    padding: 2.8rem 5vw;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; }
+  .footer-logo span { color: var(--gold); }
+  .footer-links { display: flex; gap: 2rem; list-style: none; font-size: .72rem; color: var(--smoke); letter-spacing: .08em; text-transform: uppercase; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy { font-size: .7rem; color: rgba(139,145,158,.4); }
+
+  /* ── RESPONSIVE ───────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .what-inner, .strategy-inner { grid-template-columns: 1fr; }
+    .strategy-right { position: static; }
+    .engage-cards, .partner-cards { grid-template-columns: 1fr; }
+    .industries-grid { grid-template-columns: 1fr; }
+    .yc-pillars { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2.8rem; }
+    .hero-proof { gap: 2rem; }
+    .strategy-proof { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Co<span>Solve</span><sup>by ValueSims</sup></a>
+  <ul class="nav-links">
+    <li><a href="#what">What is CoSolve</a></li>
+    <li><a href="#your-control">Your Control</a></li>
+    <li><a href="#engage">How to Engage</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#partners">Partners</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Request a Briefing</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-product-tag">
+      <div class="dot"></div>
+      <span>CoSolve — AI Agentic Platform · Now Available</span>
+    </div>
+    <h1>
+      The structured way<br/>
+      your organisation<br/>
+      <em>solves what matters.</em>
+    </h1>
+    <p class="hero-sub">
+      CoSolve is an AI-powered cloud platform that brings proven problem-solving
+      methodology directly to senior leadership teams — combining human collaboration
+      with AI agents working in the background to turn complex organisational
+      challenges into structured, aligned, and measurable outcomes.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-gold">Request an Executive Briefing</a>
+      <a href="#what" class="btn-ghost">See How It Works ↓</a>
+    </div>
+  </div>
+  <div class="hero-proof">
+    <div class="proof-stat"><div class="num">4×</div><div class="lbl">Faster problem resolution vs traditional workshops</div></div>
+    <div class="proof-stat"><div class="num">Zero</div><div class="lbl">Vendor access to your data — sovereign by architecture</div></div>
+    <div class="proof-stat"><div class="num">No</div><div class="lbl">Usage meters — one annual fee, unlimited adoption</div></div>
+  </div>
+</section>
+
+<!-- WHAT IS COSOLVE -->
+<section class="what" id="what">
+  <div class="what-inner">
+    <div class="what-left">
+      <div class="eyebrow">What is CoSolve</div>
+      <h2 class="section-title">A methodology.<br/>A platform.<br/><em>One outcome: solutions.</em></h2>
+      <p class="section-lead">
+        Most organisations are skilled at identifying problems. What they lack is
+        a structured, repeatable system for solving them — collaboratively,
+        at the right level, with the right people.
+      </p>
+      <p class="section-lead" style="margin-top:1rem;">
+        CoSolve is that system. Built for senior leaders, it combines a
+        battle-tested problem-solving methodology with a cloud platform where
+        AI agents work alongside your team — structuring inputs, surfacing patterns,
+        and keeping the process on track — from problem definition through to
+        aligned, committed action.
+      </p>
+      <div class="what-pillars" style="margin-top:2.5rem;">
+        <div class="what-pillar">
+          <div class="wp-num">1</div>
+          <div>
+            <div class="wp-title">Define the real problem</div>
+            <div class="wp-body">Structured frameworks help leadership teams move beyond symptoms to root causes — creating shared clarity on what actually needs to be solved.</div>
+          </div>
+        </div>
+        <div class="what-pillar">
+          <div class="wp-num">2</div>
+          <div>
+            <div class="wp-title">Collaborate across the organisation</div>
+            <div class="wp-body">CoSolve breaks down silos by bringing cross-functional stakeholders into a single guided environment, ensuring no critical perspective is missing.</div>
+          </div>
+        </div>
+        <div class="what-pillar">
+          <div class="wp-num">3</div>
+          <div>
+            <div class="wp-title">Align on the best path forward</div>
+            <div class="wp-body">The platform guides teams from ideas to evaluated options, building genuine organisational commitment — not just a top-down directive.</div>
+          </div>
+        </div>
+        <div class="what-pillar">
+          <div class="wp-num">4</div>
+          <div>
+            <div class="wp-title">Execute with accountability</div>
+            <div class="wp-body">Solutions are documented, owners assigned, and progress tracked — closing the gap between insight and implementation that kills most initiatives.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="what-right">
+      <div class="methodology-card">
+        <div class="mc-tag">CoSolve Methodology · AI-Assisted · Cloud Platform</div>
+        <div class="mc-title">A complete problem-solving<br/>cycle — in one platform</div>
+        <div class="mc-phases">
+          <div class="mc-phase">
+            <div class="mc-phase-num">01</div>
+            <div><div class="mc-phase-label">Discover & Frame</div><div class="mc-phase-sub">Articulate the strategic challenge with precision</div></div>
+          </div>
+          <div class="mc-phase">
+            <div class="mc-phase-num">02</div>
+            <div><div class="mc-phase-label">Diagnose & Analyse</div><div class="mc-phase-sub">Identify root causes, interdependencies & impact zones</div></div>
+          </div>
+          <div class="mc-phase">
+            <div class="mc-phase-num">03</div>
+            <div><div class="mc-phase-label">Generate & Evaluate</div><div class="mc-phase-sub">Structured ideation with cross-functional input</div></div>
+          </div>
+          <div class="mc-phase">
+            <div class="mc-phase-num">04</div>
+            <div><div class="mc-phase-label">Decide & Commit</div><div class="mc-phase-sub">Facilitated decision-making with full team alignment</div></div>
+          </div>
+          <div class="mc-phase">
+            <div class="mc-phase-num">05</div>
+            <div><div class="mc-phase-label">Implement & Track</div><div class="mc-phase-sub">Assigned actions, milestones, and progress visibility</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YOUR DATA. YOUR MODELS. YOUR COSTS. ENTIRELY. -->
+<section class="your-control" id="your-control">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="yc-header">
+      <div class="eyebrow">Your Control</div>
+      <h2 class="section-title">Your Data. Your Models.<br/><em>Your Costs. Entirely.</em></h2>
+      <p class="section-lead">
+        CoSolve is deployed inside your own Azure environment. Your data never leaves
+        your infrastructure. Your AI costs never scale with adoption. This is not a
+        policy promise — it is how the platform is architected.
+      </p>
+    </div>
+
+    <div class="yc-pillars">
+
+      <!-- Pillar 1: Data Sovereignty -->
+      <div class="yc-pillar">
+        <div class="yc-pillar-glow"></div>
+        <div class="yc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="yc-tag">Pillar 01</div>
+        <div class="yc-title">Data Sovereignty</div>
+        <div class="yc-body">
+          CoSolve runs inside the customer's own Azure environment. Data stays
+          in-country — Austrian customers use Austrian blob storage and Austrian
+          AI Services. ValueSims has zero access to your data, your documents,
+          or your AI interactions. GDPR compliance is not a policy we maintain.
+          It is enforced by the architecture itself.
+        </div>
+        <div class="yc-points">
+          <div class="yc-point">Your Azure tenant — your keys, your access controls</div>
+          <div class="yc-point">In-country storage for data residency requirements</div>
+          <div class="yc-point">ValueSims has zero access — not policy, architecture</div>
+          <div class="yc-point">GDPR by design, not by declaration</div>
+        </div>
+      </div>
+
+      <!-- Pillar 2: Intelligence on Your Terms -->
+      <div class="yc-pillar">
+        <div class="yc-pillar-glow"></div>
+        <div class="yc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="yc-tag">Pillar 02</div>
+        <div class="yc-title">Intelligence on Your Terms</div>
+        <div class="yc-body">
+          CoSolve ships with optimised LLMs ready to deploy from day one —
+          calibrated for structured reasoning in complex organisational contexts.
+          But you are never locked in. Open-source models can be swapped in with
+          minimal recalibration. You choose the reasoning level that fits your
+          needs, your budget, and your compliance requirements.
+        </div>
+        <div class="yc-points">
+          <div class="yc-point">Pre-calibrated LLMs ready from the first session</div>
+          <div class="yc-point">Open-source models supported — swap with minimal effort</div>
+          <div class="yc-point">Reasoning level chosen by you — not dictated by vendor</div>
+          <div class="yc-point">No model lock-in, ever</div>
+        </div>
+      </div>
+
+      <!-- Pillar 3: Complete Cost Authority -->
+      <div class="yc-pillar">
+        <div class="yc-pillar-glow"></div>
+        <div class="yc-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+            <line x1="10" y1="14" x2="14" y2="14"/>
+          </svg>
+        </div>
+        <div class="yc-tag">Pillar 03</div>
+        <div class="yc-title">Complete Cost Authority</div>
+        <div class="yc-body">
+          With most SaaS AI tools, adoption success directly increases your bill
+          — per query, per seat, per token. CoSolve operates inside your own
+          Azure installation. The only ongoing AI cost is your existing Azure
+          compute. ValueSims charges one annual fee that includes implementation,
+          training, and support. Wider adoption does not spike your costs.
+        </div>
+        <div class="yc-points">
+          <div class="yc-point">One annual fee — implementation, training, support included</div>
+          <div class="yc-point">No usage meters — no per-query or per-seat charges</div>
+          <div class="yc-point">Broader adoption costs nothing extra</div>
+          <div class="yc-point">Your Azure compute is the AI infrastructure</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Banner -->
+    <div class="yc-banner">
+      <div class="yc-banner-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <p>
+        No vendor access. No cross-border data flows. No usage-based pricing surprises.
+        <em>Your infrastructure, your rules, your costs — full stop.</em>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW TO ENGAGE -->
+<section class="engage" id="engage">
+  <div class="engage-header">
+    <div class="eyebrow">How to Engage</div>
+    <h2 class="section-title">CoSolve works<br/><em>the way your organisation works</em></h2>
+    <p class="section-lead">There is no one-size-fits-all approach to organisational problem-solving. CoSolve adapts to your context — whether you need a focused sprint, a continuous capability, or a structured transformation journey.</p>
+  </div>
+  <div class="engage-cards">
+    <div class="engage-card">
+      <div class="ec-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="ec-tag">Engagement Model 01</div>
+      <div class="ec-title">CoSolve Foundry</div>
+      <div class="ec-body">
+        Before your leadership team opens the CaseBoard, CoSolve needs to know
+        your organisation. The Foundry phase is a structured onboarding where
+        your relevant documents, policies, data, and organisational context are
+        ingested into a dedicated knowledge base — so the AI agents can search,
+        reason, and respond using your organisation's own intelligence from day one.
+      </div>
+      <div class="ec-detail">
+        <strong style="color:var(--white);font-weight:500;">What happens:</strong> Your documents are uploaded to a secure, dedicated knowledge store.
+        AI agents are configured to your organisational context, terminology, and priorities.
+        The CaseBoard is set up and validated before your first session.<br/><br/>
+        <strong style="color:var(--white);font-weight:500;">Outcome:</strong> A fully prepared CoSolve environment — personalised to your
+        organisation and ready for your leadership team to use from the first session.
+        No generic AI. Your knowledge, your context, your platform.
+      </div>
+    </div>
+    <div class="engage-card">
+      <div class="ec-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="ec-tag">Engagement Model 02</div>
+      <div class="ec-title">Ongoing Problem-Solving Capability</div>
+      <div class="ec-body">
+        A subscription-based model where CoSolve becomes an embedded platform
+        within the organisation — enabling leadership teams to initiate, run,
+        and track structured problem-solving cycles on demand, across
+        departments and business units.
+      </div>
+      <div class="ec-detail">
+        <strong style="color:var(--white);font-weight:500;">Ideal for:</strong> Companies committing to continuous improvement, organisations
+        managing multiple concurrent strategic initiatives, leadership teams
+        that want structured decision-making as a core competency.<br/><br/>
+        <strong style="color:var(--white);font-weight:500;">Outcome:</strong> A sustainable internal capability that reduces dependence on
+        external consultants and accelerates the pace of change.
+      </div>
+    </div>
+    <div class="engage-card">
+      <div class="ec-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+      </div>
+      <div class="ec-tag">Engagement Model 03</div>
+      <div class="ec-title">Company-Wide Problem-Solving Strategy</div>
+      <div class="ec-body">
+        A transformational deployment where ValueSims partners with your
+        organisation to build a company-wide problem-solving culture — embedding
+        CoSolve's methodology across all levels, from the C-suite to
+        frontline teams.
+      </div>
+      <div class="ec-detail">
+        <strong style="color:var(--white);font-weight:500;">Ideal for:</strong> Organisations undergoing large-scale transformation, companies
+        where problem-solving capability is fragmented or inconsistent,
+        CEOs building a high-performance leadership culture.<br/><br/>
+        <strong style="color:var(--white);font-weight:500;">Outcome:</strong> A unified methodology, shared language, and measurable
+        organisational capability — tracked through the CoSolve platform.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="industries" id="industries">
+  <div class="industries-header">
+    <div class="eyebrow">Industries</div>
+    <h2 class="section-title" style="max-width:640px;">Problem-solving has no<br/><em>industry boundaries</em></h2>
+    <p class="industries-intro">
+      Structured problem-solving has historically been the domain of manufacturing and production — rooted in lean, six sigma, and continuous improvement traditions.
+      CoSolve brings this rigour to every industry vertical, because <strong style="color:var(--white);font-weight:500;">complex challenges don't only exist on the factory floor.</strong>
+    </p>
+  </div>
+  <div class="industries-grid">
+    <div class="industry-card">
+      <div class="ic-sector">Manufacturing & Production</div>
+      <div class="ic-title">Where structured problem-solving began — and still leads</div>
+      <div class="ic-body">Production environments have long understood that unresolved process problems compound. CoSolve formalises and digitises what the best manufacturers already know.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Production bottlenecks & capacity constraints</div>
+        <div class="ic-problem">Quality defect root cause analysis</div>
+        <div class="ic-problem">Supply chain disruption response</div>
+        <div class="ic-problem">Workforce and shift productivity optimisation</div>
+      </div>
+    </div>
+    <div class="industry-card">
+      <div class="ic-sector">Financial Services & Banking</div>
+      <div class="ic-title">Where the cost of a wrong decision is measured in millions</div>
+      <div class="ic-body">In financial services, decisions made without structured analysis carry enormous downstream risk. CoSolve brings discipline and cross-functional alignment to the most consequential choices.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Regulatory compliance & risk remediation</div>
+        <div class="ic-problem">Digital transformation roadmap alignment</div>
+        <div class="ic-problem">Customer experience & retention strategy</div>
+        <div class="ic-problem">Cost reduction without service degradation</div>
+      </div>
+    </div>
+    <div class="industry-card">
+      <div class="ic-sector">Healthcare & Pharma</div>
+      <div class="ic-title">Where problem-solving directly impacts patient and organisational outcomes</div>
+      <div class="ic-body">Healthcare leaders manage extraordinary complexity — clinical, operational, regulatory, and human. CoSolve provides the structure to solve across all of these dimensions simultaneously.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Operational efficiency across care pathways</div>
+        <div class="ic-problem">Cross-departmental capacity planning</div>
+        <div class="ic-problem">Clinical & administrative process improvement</div>
+        <div class="ic-problem">Transformation programme governance</div>
+      </div>
+    </div>
+    <div class="industry-card">
+      <div class="ic-sector">Retail & Supply Chain</div>
+      <div class="ic-title">Where speed of resolution defines competitive advantage</div>
+      <div class="ic-body">Retail and supply chain organisations face volatile, fast-moving challenges that require cross-functional alignment at speed. CoSolve accelerates the path from problem to action.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Inventory & fulfilment optimisation</div>
+        <div class="ic-problem">Supplier relationship & resilience challenges</div>
+        <div class="ic-problem">Omnichannel strategy alignment</div>
+        <div class="ic-problem">Last-mile delivery & logistics redesign</div>
+      </div>
+    </div>
+  </div>
+  <div class="industries-grid" style="margin-bottom:0;">
+    <div class="industry-card">
+      <div class="ic-sector">Government & Public Sector</div>
+      <div class="ic-title">Where accountability demands structured, transparent decision-making</div>
+      <div class="ic-body">Public sector leaders are accountable to citizens, boards, and regulators simultaneously. CoSolve enables structured, auditable problem-solving that withstands scrutiny and drives real change.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Public service delivery redesign</div>
+        <div class="ic-problem">Multi-agency collaboration challenges</div>
+        <div class="ic-problem">Budget pressure & resource allocation</div>
+        <div class="ic-problem">Digital transformation & legacy system change</div>
+      </div>
+    </div>
+    <div class="industry-card">
+      <div class="ic-sector">Energy & Utilities</div>
+      <div class="ic-title">Where transition complexity demands cross-functional alignment</div>
+      <div class="ic-body">Energy organisations are navigating decarbonisation, regulatory change, and infrastructure investment simultaneously. CoSolve creates the structured space for leadership teams to solve at this scale.</div>
+      <div class="ic-problems">
+        <div class="ic-problem">Net-zero transition programme governance</div>
+        <div class="ic-problem">Asset management & infrastructure prioritisation</div>
+        <div class="ic-problem">Regulatory and stakeholder alignment</div>
+        <div class="ic-problem">Workforce transformation for new energy capabilities</div>
+      </div>
+    </div>
+    <div class="industry-card" style="display:flex;flex-direction:column;justify-content:center;background:var(--card);">
+      <div class="ic-sector">Your Industry</div>
+      <div class="ic-title" style="margin-bottom:1rem;">Every organisation has problems worth solving properly.</div>
+      <div class="ic-body" style="margin-bottom:1.8rem;">If your leadership team faces complex, cross-functional challenges that resist conventional approaches, CoSolve was built for you — regardless of sector.</div>
+      <a href="#contact" class="btn-gold" style="align-self:flex-start;">Talk to Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- COMPANY-WIDE STRATEGY -->
+<section class="strategy" id="strategy">
+  <div class="strategy-inner">
+    <div class="strategy-left">
+      <div class="eyebrow">Company-Wide Strategy</div>
+      <h2 class="section-title">Building a culture where<br/><em>every problem gets solved</em></h2>
+      <p class="section-lead">
+        Beyond individual engagements, ValueSims helps organisations embed structured
+        problem-solving as a strategic competency — creating a common language,
+        consistent methodology, and measurable capability across the entire enterprise.
+      </p>
+      <div class="strategy-steps" style="margin-top:2rem;">
+        <div class="strategy-step">
+          <div class="ss-num"></div>
+          <div>
+            <div class="ss-title">Assess your current problem-solving maturity</div>
+            <div class="ss-body">We evaluate how your organisation currently identifies, escalates, and resolves complex challenges — mapping gaps and opportunities for improvement across all levels.</div>
+          </div>
+        </div>
+        <div class="strategy-step">
+          <div class="ss-num"></div>
+          <div>
+            <div class="ss-title">Design your methodology and governance model</div>
+            <div class="ss-body">Together, we define the problem-solving framework, decision rights, escalation paths, and success metrics that will govern CoSolve deployments across your organisation.</div>
+          </div>
+        </div>
+        <div class="strategy-step">
+          <div class="ss-num"></div>
+          <div>
+            <div class="ss-title">Deploy CoSolve across teams and business units</div>
+            <div class="ss-body">The platform is configured for your context — branded, structured to your governance model, and rolled out with leadership enablement at every tier of the organisation.</div>
+          </div>
+        </div>
+        <div class="strategy-step">
+          <div class="ss-num"></div>
+          <div>
+            <div class="ss-title">Measure, improve and scale the capability</div>
+            <div class="ss-body">CoSolve tracks the health of your problem-solving culture over time — resolution rates, cycle times, team participation, and outcome quality — enabling continuous maturity improvement.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="strategy-right">
+      <div class="strategy-callout">
+        <div class="sc-label">Why this matters to the C-Suite</div>
+        <div class="sc-quote">"Most transformation failures aren't strategy failures. They're problem-solving failures — the inability to align, decide, and act on the right things, at the right time, with the right people."</div>
+        <div class="sc-author">— ValueSims Advisory Perspective</div>
+      </div>
+      <div class="strategy-proof">
+        <div class="sp-cell"><div class="sp-num">6–8wks</div><div class="sp-lbl">Average time to first company-wide deployment</div></div>
+        <div class="sp-cell"><div class="sp-num">↓ 60%</div><div class="sp-lbl">Reduction in unresolved strategic issues after 12 months</div></div>
+        <div class="sp-cell"><div class="sp-num">All levels</div><div class="sp-lbl">From board to frontline — one shared methodology</div></div>
+        <div class="sp-cell"><div class="sp-num">100%</div><div class="sp-lbl">Cloud-based — accessible anywhere, any device</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="partners" id="partners">
+  <div class="partners-header">
+    <div class="eyebrow">Partner Programme</div>
+    <h2 class="section-title">Bring CoSolve to<br/><em>your clients</em></h2>
+    <p class="section-lead">ValueSims works with consulting firms, change management specialists, and industry solution providers who want to deliver structured problem-solving capability to their own client base — powered by CoSolve.</p>
+  </div>
+  <div class="partner-cards">
+    <div class="partner-card">
+      <div class="pc-type">Partner Type 01</div>
+      <div class="pc-title">Management Consultancies</div>
+      <div class="pc-body">Add CoSolve to your client engagements as the structured platform that helps your clients act on the strategic direction you define together — turning advisory insight into organised, measurable execution led by their own teams.</div>
+      <div class="pc-benefits">
+        <div class="pc-benefit">Differentiate your methodology with a proprietary platform</div>
+        <div class="pc-benefit">Extend engagement value beyond the initial project</div>
+        <div class="pc-benefit">White-label or co-branded deployment options</div>
+        <div class="pc-benefit">Revenue share on platform subscriptions</div>
+      </div>
+    </div>
+    <div class="partner-card">
+      <div class="pc-type">Partner Type 02</div>
+      <div class="pc-title">HR & Change Management Firms</div>
+      <div class="pc-body">CoSolve gives your clients a structured platform to work through the decisions and challenges that your change programme surfaces — keeping momentum inside the organisation between your engagements.</div>
+      <div class="pc-benefits">
+        <div class="pc-benefit">Reinforce change adoption through structured problem-solving</div>
+        <div class="pc-benefit">Give clients a tool that sustains engagement post-programme</div>
+        <div class="pc-benefit">Link people capability to measurable business outcomes</div>
+        <div class="pc-benefit">Expand client relationships beyond project boundaries</div>
+      </div>
+    </div>
+    <div class="partner-card">
+      <div class="pc-type">Partner Type 03</div>
+      <div class="pc-title">Industry Solution Providers</div>
+      <div class="pc-body">If you serve a specific sector — whether healthcare, logistics, finance, or government — CoSolve can be configured for your industry context and added to your solution portfolio as a platform your clients use independently to solve their own complex challenges.</div>
+      <div class="pc-benefits">
+        <div class="pc-benefit">Industry-specific configuration and content</div>
+        <div class="pc-benefit">Integrate CoSolve with your existing platform or offering</div>
+        <div class="pc-benefit">Build recurring revenue on top of your core solution</div>
+        <div class="pc-benefit">Access to ValueSims methodology training and certification</div>
+      </div>
+    </div>
+  </div>
+  <div class="partner-cta">
+    <p>Interested in becoming a CoSolve partner? Let's explore what <em>a collaboration could look like</em> for your clients.</p>
+    <a href="#contact" class="btn-gold">Explore the Partner Programme</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="background:var(--panel);border-top:1px solid var(--border);padding:7rem 5vw;">
+  <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:start;">
+
+    <!-- Left: headline -->
+    <div>
+      <div class="eyebrow" style="margin-bottom:1.2rem;">Get in Touch</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.6rem);font-weight:300;line-height:1.12;margin-bottom:1.4rem;">
+        Your organisation's most complex problems<br/><em style="font-style:italic;color:var(--gold);">deserve a better process.</em>
+      </h2>
+      <p style="font-size:1rem;color:var(--smoke);font-weight:300;line-height:1.8;margin-bottom:2rem;">
+        Book a 45-minute executive briefing. We'll walk you through CoSolve, explore your specific challenges, and show you what a deployment could look like for your organisation.
+      </p>
+      <p style="font-size:.88rem;color:var(--smoke);font-weight:300;line-height:1.75;">
+        Or reach us directly at<br/>
+        <a href="mailto:vp@valuesims.com" style="color:var(--gold);">vp@valuesims.com</a>
+      </p>
+      <p style="margin-top:1.8rem;font-size:.78rem;color:rgba(139,145,158,.5);letter-spacing:.06em;">No commitment required — a structured conversation, facilitated the CoSolve way.</p>
+    </div>
+
+    <!-- Right: contact form -->
+    <div style="background:var(--card);border:1px solid var(--border);padding:2.8rem;">
+      <div style="font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.6rem;">Send us a message</div>
+      <form id="contactForm" onsubmit="sendForm(event)" style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+          <div>
+            <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">First Name</label>
+            <input type="text" name="first_name" placeholder="Your first name" required style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--white);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">Last Name</label>
+            <input type="text" name="last_name" placeholder="Your last name" style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--white);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">Company</label>
+          <input type="text" name="company" placeholder="Your organisation" style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--white);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">Email Address</label>
+          <input type="email" name="email" placeholder="your@email.com" required style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--white);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">I am interested in</label>
+          <select name="interest" required style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--smoke);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;appearance:none;cursor:pointer;">
+            <option value="">Select an option...</option>
+            <option value="Executive Briefing for my organisation">Executive Briefing for my organisation</option>
+            <option value="Becoming a CoSolve Partner">Becoming a CoSolve Partner</option>
+            <option value="Seeing a CoSolve demonstration">Seeing a CoSolve demonstration</option>
+            <option value="General enquiry">General enquiry</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:.5rem;">Message <span style="color:rgba(139,145,158,.4);text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <textarea name="message" rows="3" placeholder="Briefly describe your challenge or question..." style="width:100%;background:var(--deep);border:1px solid var(--border);color:var(--white);padding:.75rem 1rem;font-family:var(--sans);font-size:.88rem;outline:none;resize:vertical;transition:border-color .2s;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+        <input type="hidden" name="_subject" value="New CoSolve Enquiry from valuesims.com"/>
+        <button type="submit" id="submitBtn" style="background:var(--gold);color:var(--ink);font-family:var(--sans);font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.9rem 2rem;border:none;cursor:pointer;transition:background .25s;align-self:flex-start;" onmouseover="this.style.background='var(--gold2)'" onmouseout="this.style.background='var(--gold)'">Send Message</button>
+        <div id="formSuccess" style="display:none;background:rgba(201,168,76,.08);border:1px solid var(--gold);padding:1rem 1.2rem;font-size:.88rem;color:var(--gold);line-height:1.6;">
+          ✓ Message sent successfully! We will be in touch at the email address you provided within 1–2 business days.
+        </div>
+        <div id="formError" style="display:none;padding:.6rem 0;font-size:.82rem;color:#e07070;"></div>
+      </form>
+
+<script>
+async function sendForm(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submitBtn');
+  btn.textContent = 'Sending...';
+  btn.style.opacity = '0.7';
+  btn.disabled = true;
+
+  var form = document.getElementById('contactForm');
+  var data = new FormData(form);
+
+  try {
+    var response = await fetch('https://formspree.io/f/xjgejpwn', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      form.reset();
+      document.getElementById('formSuccess').style.display = 'block';
+      document.getElementById('formError').style.display = 'none';
+      btn.style.display = 'none';
+    } else {
+      throw new Error('Server error');
+    }
+  } catch(err) {
+    document.getElementById('formError').style.display = 'block';
+    document.getElementById('formError').textContent = 'Something went wrong. Please email us directly at vp@valuesims.com';
+    btn.textContent = 'Send Message';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }
+}
+</script>
+    </div>
+  </div>
+</section>
+
+
+<!-- ABOUT -->
+<section id="about" style="background:var(--deep);border-top:1px solid var(--border);padding:5rem 5vw;">
+  <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:start;">
+
+    <div>
+      <div class="eyebrow" style="margin-bottom:1.2rem;">About ValueSims</div>
+      <h2 style="font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;line-height:1.15;margin-bottom:1.4rem;">
+        The company behind <em style="font-style:italic;color:var(--gold);">CoSolve</em>
+      </h2>
+      <p style="font-size:.95rem;color:var(--smoke);font-weight:300;line-height:1.85;margin-bottom:1rem;">
+        ValueSims is an Austrian technology and advisory company specialising in the design and delivery of structured problem-solving solutions for senior leadership teams. Founded and led by Vassilis Pangalis, ValueSims combines deep expertise in business methodology, digital simulation, and artificial intelligence to build tools that help organisations make better decisions — faster and with greater confidence.
+      </p>
+      <p style="font-size:.95rem;color:var(--smoke);font-weight:300;line-height:1.85;margin-bottom:2rem;">
+        CoSolve is ValueSims' flagship platform — the result of years of working with organisations across multiple industries to understand why structured problem-solving succeeds when traditional approaches fail.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:.8rem;padding:1.8rem;background:var(--card);border:1px solid var(--border);">
+        <div style="font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;">Company Details</div>
+        <div style="font-size:.82rem;color:var(--mist);font-weight:300;display:flex;gap:.8rem;">
+          <span style="color:var(--gold);min-width:1rem;">✦</span>
+          <span><strong style="color:var(--white);font-weight:500;">Legal name:</strong> ValueSims</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--mist);font-weight:300;display:flex;gap:.8rem;">
+          <span style="color:var(--gold);min-width:1rem;">✦</span>
+          <span><strong style="color:var(--white);font-weight:500;">Company type:</strong> Sole proprietorship, registered in Austria</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--mist);font-weight:300;display:flex;gap:.8rem;">
+          <span style="color:var(--gold);min-width:1rem;">✦</span>
+          <span><strong style="color:var(--white);font-weight:500;">Headquarters:</strong> Klosterneuburg, Austria</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--mist);font-weight:300;display:flex;gap:.8rem;">
+          <span style="color:var(--gold);min-width:1rem;">✦</span>
+          <span><strong style="color:var(--white);font-weight:500;">Email:</strong> <a href="mailto:vp@valuesims.com" style="color:var(--gold);">vp@valuesims.com</a></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="background:var(--card);border:1px solid var(--border);padding:2.5rem;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 90% 10%, rgba(201,168,76,.08), transparent 55%);pointer-events:none;"></div>
+        <div style="font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;">Founder &amp; Principal</div>
+        <div style="font-family:var(--serif);font-size:1.9rem;font-weight:300;margin-bottom:.4rem;">Vassilis Pangalis</div>
+        <div style="font-size:.78rem;color:var(--smoke);margin-bottom:1.4rem;letter-spacing:.04em;">Founder · ValueSims · CoSolve</div>
+        <p style="font-size:.87rem;color:var(--smoke);font-weight:300;line-height:1.8;margin-bottom:1.8rem;">
+          Vassilis brings a career spanning business simulation, digital transformation advisory, and AI-assisted decision-making. His work with mid and large-size organisations across multiple industries forms the foundation of the CoSolve methodology — a practical, field-tested approach to structured problem-solving at the leadership level.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:.8rem;">
+          <a href="https://www.linkedin.com/in/vassilis-pangalis" target="_blank"
+             style="display:inline-flex;align-items:center;gap:.7rem;padding:.7rem 1.4rem;border:1px solid rgba(201,168,76,.4);color:var(--gold);font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:background .25s;"
+             onmouseover="this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.background='transparent'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            Founder on LinkedIn
+          </a>
+          <a href="https://www.linkedin.com/company/valuesims" target="_blank"
+             style="display:inline-flex;align-items:center;gap:.7rem;padding:.7rem 1.4rem;border:1px solid rgba(201,168,76,.4);color:var(--gold);font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:background .25s;"
+             onmouseover="this.style.background='rgba(201,168,76,.08)'" onmouseout="this.style.background='transparent'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            ValueSims on LinkedIn
+          </a>
+        </div>
+        <div style="margin-top:.8rem;font-size:.7rem;color:rgba(139,145,158,.4);">Xing profile coming soon</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Co<span>Solve</span></div>
+  <ul class="footer-links">
+    <li><a href="#what">What is CoSolve</a></li>
+    <li><a href="#your-control">Your Control</a></li>
+    <li><a href="#engage">Engage</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#partners">Partners</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 ValueSims · Klosterneuburg, Austria · All rights reserved</div>
+</footer>
+
+</body>
+</html>
